@@ -10,6 +10,8 @@ import discord
 import json
 import os
 
+from classes.database import Database
+
 # load the env so the TOKEN is fed into the environment vars
 load_dotenv()
 
@@ -59,6 +61,8 @@ client = commands.Bot(
     intents=intents,
     help_command=HelpCommand()
 )
+client.database = Database("./database.db")
+client.database.setup()
 
 
 @client.command(name="sync", brief="Sync commands.")

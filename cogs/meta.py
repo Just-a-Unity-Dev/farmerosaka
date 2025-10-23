@@ -4,14 +4,19 @@ import discord
 import aiohttp
 from typing import List
 
+from classes.database import Database
+
 
 class MetaCog(
     commands.Cog,
     name="Meta",
     description="Meta stuff, including displaying information."
 ):
+    database: Database
+
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
+        self.database = client.database
         self.VERSION = "0.0.1"
 
     @commands.hybrid_command(
@@ -43,6 +48,7 @@ class MetaCog(
 
             if len(attachments) <= 0:
                 return await ctx.reply("add a link, upload an image, or reply to an **image**.")
+            image_url = attachments[0].url
             image_data = await attachments[0].read()
 
         status = await ctx.reply("gimme a second...")
@@ -56,7 +62,12 @@ class MetaCog(
                             await status.edit(content=f"failed to dl image, err code {resp.status}")
                             return
                         image_data = await resp.read()
-            
+
+            self.database.add_log(
+                ctx.author.id,
+                "PFPChange",
+                f"Changed the profile picture to [this]({image_url})"
+            )
             await self.client.user.edit(avatar=image_data)
             return await status.edit(content="updated my pfp to your liking.")
         except discord.errors.HTTPException as e:
