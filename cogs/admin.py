@@ -1,6 +1,7 @@
 from discord.ext import commands
 from classes.database import Database
 from classes.is_owner import is_owner
+from tabulate import tabulate
 
 
 class AdminCog(
@@ -20,17 +21,32 @@ class AdminCog(
             description="opens a cursor, and runs the sql script"
     )
     @is_owner()
-    async def inspect_command(
+    async def eval_sql_command(
         self,
         ctx: commands.Context,
         *,
         message: str
     ):
+        status = await ctx.reply("running sql... :cloud:")
         sql_code = message.strip()
 
         cursor = self.database.database.cursor()
-        cursor.execute(sql_code)
-        await ctx.reply("```py\n{}```".format('\n'.join(map(lambda x: repr(x), cursor.fetchall()))))
+        message = "failed to run code: "
+        try:
+            cursor.execute(sql_code)
+            column_names = (description[0] for description in cursor.description)
+            cursor_data = list(cursor.fetchall())
+            data = tabulate(cursor_data, column_names, tablefmt="rounded_grid")
+            message = f"```{data}```"
+            self.database.database.commit()
+        except Exception as e:
+            message += repr(e)
+
+        if len(message) > 2000:
+            return await status.edit(content="Data specified could not\
+                                      fit in the 2000 character limit.")
+
+        await status.edit(content=message)
 
 
 async def setup(client: commands.Bot) -> None:
