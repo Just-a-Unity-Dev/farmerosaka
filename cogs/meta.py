@@ -112,6 +112,8 @@ class MetaCog(
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f"cooldown. try again in {error.retry_after:.2f} seconds.")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("you're not the owner of this bot. shoo, shoo.")
         else:
             raise error
 
