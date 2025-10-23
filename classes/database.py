@@ -24,8 +24,19 @@ class Database:
     "status"	TEXT,
     PRIMARY KEY("id" AUTOINCREMENT)
 );""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS "roles" (
+    "id"	INTEGER UNIQUE,
+    "owner"	INTEGER NOT NULL,
+    "status" INTEGER NOT NULL,
+    "timestamp" INTEGER NOT NULL,
+    PRIMARY KEY("id")
+);""")
         self.database.commit()
         cursor.close()
+
+    @staticmethod
+    def utc_time_now() -> int:
+        return datetime.now(timezone.utc).timestamp()
 
     def add_log(self, author: int, action: str, details: str, cursor: sqlite3.Cursor = None):
         """
@@ -36,9 +47,7 @@ class Database:
             cursor = self.database.cursor()
 
         query = "INSERT INTO command_action_logs VALUES (NULL, ?, ?, ?, ?)"
-        cursor.execute(query, (datetime.now(timezone.utc).timestamp(), author, action, details,))
+        cursor.execute(query, (Database.utc_time_now(), author, action, details,))
         self.database.commit()
-
-        print("Log added!")
 
         cursor.close()
