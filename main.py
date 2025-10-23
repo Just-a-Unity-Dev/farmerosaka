@@ -151,6 +151,7 @@ async def on_ready():
 
     print(f'Bot is now online. Ping is {round(client.latency * 1000)}ms.')
 
+
 if __name__ == "__main__":
     if os.getenv('TOKEN') == 'secret':
         raise Exception("Please set your token with the TOKEN environment variable.")

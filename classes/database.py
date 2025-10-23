@@ -36,7 +36,7 @@ class Database:
             cursor = self.database.cursor()
 
         query = "INSERT INTO command_action_logs VALUES (NULL, ?, ?, ?, ?)"
-        cursor.execute(query, (datetime.now(timezone.utc).timestamp(), author, action, details))
+        cursor.execute(query, (datetime.now(timezone.utc).timestamp(), author, action, details,))
         self.database.commit()
 
         print("Log added!")
