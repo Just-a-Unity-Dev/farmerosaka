@@ -30,7 +30,7 @@ class AdminCog(
 
         cursor = self.database.database.cursor()
         cursor.execute(sql_code)
-        await ctx.reply("`{}`".format('\n'.join(map(lambda x: repr(x), cursor.fetchall()))))
+        await ctx.reply("```py\n{}```".format('\n'.join(map(lambda x: repr(x), cursor.fetchall()))))
 
 
 async def setup(client: commands.Bot) -> None:
