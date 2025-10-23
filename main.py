@@ -3,8 +3,10 @@ from discord.ext.commands import Greedy, Context  # or a subclass of yours
 from typing import Literal, Optional
 from discord.ext import commands
 from asyncio import sleep
+import sqlite3
 import random
 
+from typing import List
 from dotenv import load_dotenv
 import discord
 import json
@@ -110,11 +112,17 @@ async def sync_command(
 
 def pick_status():
     try:
-        statuses = json.load(open("statuses.json", "r"))
+        cursor: sqlite3.Cursor = client.database.database.cursor()
+        cursor.execute("SELECT status FROM statuses")
+        db_statuses = list(map(lambda x: x[0], cursor.fetchall()))
+        cursor.close()
+
+        statuses: List[str] = json.load(open("statuses.json", "r"))
+        statuses.extend(db_statuses)
         return random.choice(statuses)
     except Exception as e:
         print(e)
-        return "err!!!"
+        return ":<< i had an error loading the statuses please cal rain!"
 
 
 async def status_task():
@@ -122,7 +130,7 @@ async def status_task():
         await client.change_presence(
             status=discord.Status.idle,
             activity=discord.CustomActivity(name=pick_status()))
-        await sleep(random.randint(60, 600)*60)
+        await sleep(random.randint(60, 600))
 
 
 @client.event

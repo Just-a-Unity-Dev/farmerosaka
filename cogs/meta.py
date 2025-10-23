@@ -81,6 +81,33 @@ class MetaCog(
             print(f"An error occurred: {e}")
             return await status.edit(content="an unhandled error occurred, please contact rain.")
 
+    @commands.hybrid_command(
+            name="addstatus",
+            brief="adds a status.",
+            description="adds a status that can be picked."
+    )
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    async def add_status_command(self, ctx: commands.Context, *, message: str):
+        sanitized_status = message.strip()[:128]
+        if sanitized_status == "":
+            return await ctx.reply("supply a message, please.")
+        cursor = self.database.database.cursor()
+
+        query = "INSERT INTO statuses VALUES (NULL, ?, ?)"
+        cursor.execute(query, (ctx.author.id, sanitized_status))
+        cursor.execute("SELECT last_insert_rowid();")
+
+        self.database.add_log(
+            ctx.author.id,
+            "AddStatus",
+            f"Added status ID {cursor.fetchone()}"
+        )
+
+        self.database.database.commit()
+        cursor.close()
+
+        return await ctx.reply(f"added `{message}` as a possible status to the bot.")
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):

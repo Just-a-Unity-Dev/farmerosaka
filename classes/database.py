@@ -9,7 +9,8 @@ class Database:
         self.database = sqlite3.connect(path)
 
     def setup(self):
-        self.database.execute("""CREATE TABLE IF NOT EXISTS "command_action_logs" (
+        cursor = self.database.cursor()
+        cursor.execute("""CREATE TABLE IF NOT EXISTS "command_action_logs" (
     "id"	INTEGER UNIQUE,
     "timestamp"	INTEGER NOT NULL,
     "author"	INTEGER NOT NULL,
@@ -17,6 +18,14 @@ class Database:
     "details"	TEXT,
     PRIMARY KEY("id" AUTOINCREMENT)
 );""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS "statuses" (
+    "id"	INTEGER UNIQUE,
+    "author"	INTEGER NOT NULL,
+    "status"	TEXT,
+    PRIMARY KEY("id" AUTOINCREMENT)
+);""")
+        self.database.commit()
+        cursor.close()
 
     def add_log(self, author: int, action: str, details: str, cursor: sqlite3.Cursor = None):
         """
