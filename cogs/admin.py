@@ -34,16 +34,20 @@ class AdminCog(
         message = "failed to run code: "
         try:
             cursor.execute(sql_code)
-            column_names = (description[0] for description in cursor.description)
-            cursor_data = list(cursor.fetchall())
-            data = tabulate(cursor_data, column_names, tablefmt="rounded_grid")
-            message = f"```{data}```"
             self.database.database.commit()
         except Exception as e:
             message += repr(e)
+        else:
+            if cursor.description is None:
+                column_names = (description[0] for description in cursor.description)
+                cursor_data = list(cursor.fetchall())
+                data = tabulate(cursor_data, column_names, tablefmt="rounded_grid")
+                message = f"```{data}```"
+            else:
+                message = "successfully ran sql code!"
 
         if len(message) > 2000:
-            return await status.edit(content="Data specified could not\
+            return await status.edit(content="data specified could not\
                                       fit in the 2000 character limit.")
 
         await status.edit(content=message)
