@@ -5,6 +5,9 @@ Basic discord bot for a private server.
 ## features
 
 * Allow members to change the bot's profile picture
+* Allow members to add statuses to the periodic status rotation
+* Member custom role management through commands
+* Admin-only SQL evaluation
 
 ## how do I host this
 
