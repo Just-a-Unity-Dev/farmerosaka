@@ -38,7 +38,7 @@ class AdminCog(
         except Exception as e:
             message += repr(e)
         else:
-            if cursor.description is None:
+            if cursor.description is not None:
                 column_names = (description[0] for description in cursor.description)
                 cursor_data = list(cursor.fetchall())
                 data = tabulate(cursor_data, column_names, tablefmt="rounded_grid")
