@@ -7,7 +7,6 @@ import discord
 import aiohttp
 from typing import List
 
-from classes.is_owner import is_owner
 from classes.database import Database
 from cogs.message_recorder import RecorderCog
 
