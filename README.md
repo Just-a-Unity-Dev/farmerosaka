@@ -8,6 +8,9 @@ Basic discord bot for a private server.
 * Allow members to add statuses to the periodic status rotation
 * Member custom role management through commands
 * Admin-only SQL evaluation
+* Markov chains based on messsages sent
+* Daily quotes from server members
+* Message content opt-out system to be ignored from markov/quotes
 
 ## how do I host this
 
