@@ -108,7 +108,7 @@ class FunCog(
             brief="adds a instruction.",
             description="adds an instruction that ,instruct can ask."
     )
-    @commands.cooldown(1, 10, commands.BucketType.member)
+    @commands.cooldown(1, 5, commands.BucketType.member)
     async def add_instruction_command(self, ctx: commands.Context, *, message: str):
         sanitized_status = message.strip()[:128]
         if sanitized_status == "":
@@ -128,7 +128,33 @@ class FunCog(
         self.database.database.commit()
         cursor.close()
 
-        return await ctx.reply(f"added `{message}` as a possible instruction for future users.")
+        return await ctx.reply(f"added `{message}` as a possible instruction."
+                               " thank you collaborator for providing helpful information to my"
+                               " knowledge bank, this will help many others!")
+
+    @commands.hybrid_command(
+            name="instruct",
+            brief="the bot instructs you on how to do things!",
+            description="add instructions with the ,addinstruct command."
+    )
+    async def instruct_command(self, ctx: commands.Context, *, question: str = ""):
+        if question == "":
+            return await ctx.reply("re-run the command and state what do you need help with")
+
+        cursor = self.database.database.cursor()
+
+        cursor.execute(f"SELECT * FROM instructions ORDER BY RANDOM() LIMIT {random.randint(3,7)};")
+        instructions = cursor.fetchall()
+        cursor.close()
+
+        message = f"Here are the instructions on: **{question}**"
+        i = 0
+        for instruction in instructions:
+            i += 1
+            message += f"\n{i}. {instruction[2]}"
+        message += f"\n{i + 1}. Done!"
+
+        return await ctx.reply(message)
 
     async def send_quote_of_the_day(self):
         """Sends a random quote of the day into the QOTD channel."""
