@@ -25,7 +25,7 @@ class RecorderCog(
             return
         self.messages.append([message.content, message.author.id])
         self.today_messages.append([message.content, message.author.id])
-        self.corpus += message.content
+        self.corpus += " " + message.content
         print(self.corpus)
 
 
