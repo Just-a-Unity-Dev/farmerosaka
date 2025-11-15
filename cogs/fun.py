@@ -5,6 +5,7 @@ from discord.ext import tasks
 from datetime import time
 import discord
 import aiohttp
+import markovify
 from typing import List
 
 from classes.database import Database
@@ -155,6 +156,33 @@ class FunCog(
         message += f"\n{i + 1}. Done!"
 
         return await ctx.reply(message)
+
+    @commands.hybrid_command(
+            name="markov",
+            brief="markov chain!",
+            description="idk its ,markov! the FNaF series and like normal I might ping everyone to"
+    )
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def markov_command(self, ctx: commands.Context, start: str = ""):
+        recorder_cog: RecorderCog = self.client.get_cog("Message recorder")
+        model = markovify.Text(recorder_cog.corpus, state_size=1)
+        if start == "":
+            return await ctx.reply(model.make_sentence())
+        return await ctx.reply(model.make_sentence_with_start(start, strict=False))
+
+    @commands.hybrid_command(
+            name="smarkov",
+            brief="smart markov chain!",
+            description="its ,markov but with state_sizes set to two"
+    )
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def smarkov_command(self, ctx: commands.Context, start: str = ""):
+        recorder_cog: RecorderCog = self.client.get_cog("Message recorder")
+        # Duplicated code... smh
+        model = markovify.Text(recorder_cog.corpus, state_size=2)
+        if start == "":
+            return await ctx.reply(model.make_sentence(tries=100))
+        return await ctx.reply(model.make_sentence_with_start(start, strict=False, tries=100))
 
     async def send_quote_of_the_day(self):
         """Sends a random quote of the day into the QOTD channel."""

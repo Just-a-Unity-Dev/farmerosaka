@@ -10,6 +10,7 @@ class RecorderCog(
 ):
     messages = []
     today_messages = []
+    corpus = ""
 
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
@@ -24,6 +25,8 @@ class RecorderCog(
             return
         self.messages.append([message.content, message.author.id])
         self.today_messages.append([message.content, message.author.id])
+        self.corpus += message.content
+        print(self.corpus)
 
 
 async def setup(client: commands.Bot) -> None:
