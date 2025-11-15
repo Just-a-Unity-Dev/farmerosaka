@@ -35,7 +35,6 @@ class Database:
     "id"	INTEGER UNIQUE,
     "creator"	INTEGER NOT NULL,
     "message" INTEGER NOT NULL,
-    "timestamp" INTEGER NOT NULL,
     PRIMARY KEY("id")
 );""")
         self.database.commit()
