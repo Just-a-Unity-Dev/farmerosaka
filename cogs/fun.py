@@ -96,6 +96,33 @@ class MetaCog(
 
         return await ctx.reply(f"added `{message}` as a possible status to the bot.")
 
+    @commands.hybrid_command(
+            name="addinstruct",
+            brief="adds a instruction.",
+            description="adds an instruction that ,instruct can ask."
+    )
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    async def add_instruction_command(self, ctx: commands.Context, *, message: str):
+        sanitized_status = message.strip()[:128]
+        if sanitized_status == "":
+            return await ctx.reply("supply a message, please.")
+        cursor = self.database.database.cursor()
+
+        query = "INSERT INTO instructions VALUES (NULL, ?, ?)"
+        cursor.execute(query, (ctx.author.id, sanitized_status))
+        cursor.execute("SELECT last_insert_rowid();")
+
+        self.database.add_log(
+            ctx.author.id,
+            "AddInstruction",
+            f"Added instruction ID {cursor.fetchone()}"
+        )
+
+        self.database.database.commit()
+        cursor.close()
+
+        return await ctx.reply(f"added `{message}` as a possible instruction for future users.")
+
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(MetaCog(client))

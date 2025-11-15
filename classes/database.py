@@ -31,6 +31,13 @@ class Database:
     "timestamp" INTEGER NOT NULL,
     PRIMARY KEY("id")
 );""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS "instructions" (
+    "id"	INTEGER UNIQUE,
+    "creator"	INTEGER NOT NULL,
+    "message" INTEGER NOT NULL,
+    "timestamp" INTEGER NOT NULL,
+    PRIMARY KEY("id")
+);""")
         self.database.commit()
         cursor.close()
 
