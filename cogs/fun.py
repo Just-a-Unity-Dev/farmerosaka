@@ -166,9 +166,15 @@ class FunCog(
     async def markov_command(self, ctx: commands.Context, start: str = ""):
         recorder_cog: RecorderCog = self.client.get_cog("Message recorder")
         model = markovify.Text(recorder_cog.corpus, state_size=1)
+
+        content = ""
         if start == "":
-            return await ctx.reply(model.make_sentence())
-        return await ctx.reply(model.make_sentence_with_start(start, strict=False))
+            content = model.make_sentence(tries=100)
+        else:
+            content = model.make_sentence_with_start(start, strict=False, tries=100)
+
+        return await ctx.reply(content, allowed_mentions=discord.AllowedMentions(
+            users=False, roles=False, everyone=False))
 
     @commands.hybrid_command(
             name="smarkov",
@@ -180,9 +186,15 @@ class FunCog(
         recorder_cog: RecorderCog = self.client.get_cog("Message recorder")
         # Duplicated code... smh
         model = markovify.Text(recorder_cog.corpus, state_size=2)
+
+        content = ""
         if start == "":
-            return await ctx.reply(model.make_sentence(tries=100))
-        return await ctx.reply(model.make_sentence_with_start(start, strict=False, tries=100))
+            content = model.make_sentence(tries=100)
+        else:
+            content = model.make_sentence_with_start(start, strict=False, tries=100)
+
+        return await ctx.reply(content, allowed_mentions=discord.AllowedMentions(
+            users=False, roles=False, everyone=False))
 
     async def send_quote_of_the_day(self):
         """Sends a random quote of the day into the QOTD channel."""
