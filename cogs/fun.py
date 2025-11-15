@@ -1,12 +1,18 @@
+import os
+import random
 from discord.ext import commands
+from discord.ext import tasks
+from datetime import time
 import discord
 import aiohttp
 from typing import List
 
+from classes.is_owner import is_owner
 from classes.database import Database
+from cogs.message_recorder import RecorderCog
 
 
-class MetaCog(
+class FunCog(
     commands.Cog,
     name="Fun",
     description="Just fun stuff!"
@@ -16,6 +22,8 @@ class MetaCog(
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
         self.database = client.database
+        self.qotd_channel = self.client.get_channel(int(os.getenv("QOTD_CHANNEL")))
+        self.daily_task.start()
 
     @commands.hybrid_command(
             name="pfp",
@@ -123,6 +131,21 @@ class MetaCog(
 
         return await ctx.reply(f"added `{message}` as a possible instruction for future users.")
 
+    async def send_quote_of_the_day(self):
+        """Sends a random quote of the day into the QOTD channel."""
+        recorder_cog: RecorderCog = self.client.get_cog("Message recorder")
+        selected_qotd = random.choice(recorder_cog.today_messages)
+
+        await self.qotd_channel.send("**Quote of the day from yesterday:**\n"
+                                     f"> {selected_qotd[0]}\n"
+                                     f"-# Thank you, <@{selected_qotd[1]}>!")
+
+        recorder_cog.today_messages = []
+
+    @tasks.loop(time=time(hour=9, minute=0))
+    async def daily_task(self):
+        await self.send_quote_of_the_day()
+
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(MetaCog(client))
+    await client.add_cog(FunCog(client))

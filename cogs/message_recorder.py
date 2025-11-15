@@ -9,6 +9,7 @@ class RecorderCog(
     description="Records your messages (unless you don't want to)"
 ):
     messages = []
+    today_messages = []
 
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
@@ -22,6 +23,7 @@ class RecorderCog(
         if message.author.get_role(self.opt_out_id) is not None:
             return
         self.messages.append([message.content, message.author.id])
+        self.today_messages.append([message.content, message.author.id])
 
 
 async def setup(client: commands.Bot) -> None:
