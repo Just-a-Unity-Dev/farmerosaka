@@ -154,3 +154,6 @@ cython_debug/
 
 # Database files
 *.db
+
+# Saved corpus
+corpus.txt
