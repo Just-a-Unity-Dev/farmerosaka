@@ -23,10 +23,9 @@ class RecorderCog(
             return
         if message.author.get_role(self.opt_out_id) is not None:
             return
-        self.messages.append([message.content, message.author.id])
-        self.today_messages.append([message.content, message.author.id])
+        self.messages.append([message.content, message.author.id, message.jump_url])
+        self.today_messages.append([message.content, message.author.id, message.jump_url])
         self.corpus += " " + message.content
-        print(self.corpus)
 
 
 async def setup(client: commands.Bot) -> None:

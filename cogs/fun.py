@@ -199,11 +199,18 @@ class FunCog(
     async def send_quote_of_the_day(self):
         """Sends a random quote of the day into the QOTD channel."""
         recorder_cog: RecorderCog = self.client.get_cog("Message recorder")
+
+        if len(recorder_cog.today_messages) <= 0:
+            await self.qotd_channel.send("No messages were sent yesterday... sorry :(")
+            return await Exception("No messages were sent today. Failed to get proper QOTD.")
+
         selected_qotd = random.choice(recorder_cog.today_messages)
+        content = selected_qotd[0]
+        author = selected_qotd[1]
+        jump_url = selected_qotd[2]
 
         await self.qotd_channel.send("**Quote of the day from yesterday:**\n"
-                                     f"> {selected_qotd[0]}\n"
-                                     f"-# Thank you, <@{selected_qotd[1]}>!")
+                                     f"> {content}\n-# Thank you, <@{author}>! (see {jump_url})")
 
         recorder_cog.today_messages = []
 
