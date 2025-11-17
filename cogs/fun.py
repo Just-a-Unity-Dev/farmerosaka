@@ -9,6 +9,7 @@ import markovify
 from typing import List
 
 from classes.database import Database
+from classes.is_owner import is_owner
 from cogs.message_recorder import RecorderCog
 
 
@@ -195,6 +196,16 @@ class FunCog(
 
         return await ctx.reply(content, allowed_mentions=discord.AllowedMentions(
             users=False, roles=False, everyone=False))
+
+    @commands.hybrid_command(
+            name="forceqotd",
+            brief="forcibly sends a qotd",
+            description="it forces out a qotd. what else do you want me to say"
+    )
+    @is_owner()
+    async def force_qotd_command(self, ctx: commands.Context):
+        await self.send_quote_of_the_day()
+        await ctx.reply("Attempted to send the quote of the day.")
 
     async def send_quote_of_the_day(self):
         """Sends a random quote of the day into the QOTD channel."""
