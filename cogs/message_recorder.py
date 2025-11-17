@@ -20,7 +20,8 @@ class RecorderCog(
         self.opt_out_id = int(os.getenv('MESSAGE_RECORDER_OPT_OUT_ROLE_ID'))
         self.messages = []
 
-        with open("corpus.txt", "w+") as f:
+        with open("corpus.txt", "a+") as f:
+            f.seek(0)
             self.corpus = f.read().strip()
 
     @commands.Cog.listener()
