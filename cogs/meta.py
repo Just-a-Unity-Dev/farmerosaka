@@ -39,7 +39,6 @@ class MetaCog(
     @commands.Cog.listener()
     async def on_message(self, message: Message):
         pattern = re.compile(r"(youtu\.be)\/(.*)\?si=(.*)")
-        print(pattern.search(message.content))
         if pattern.search(message.content):
             await message.reply("**HEY**. Please remove the `?si=` part of your youtube links."
                                 " You may keep `&t=` for timestamps.\nThe `?si=` is a"
