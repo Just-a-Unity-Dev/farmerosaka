@@ -1,5 +1,6 @@
-from discord import app_commands
+from discord import Message, app_commands
 from discord.ext import commands
+import re
 
 from classes.database import Database
 
@@ -34,6 +35,16 @@ class MetaCog(
             await ctx.send("you're not the owner of this bot. shoo, shoo.")
         else:
             raise error
+
+    @commands.Cog.listener()
+    async def on_message(self, message: Message):
+        pattern = re.compile(r"(youtu\.be)\/(.*)\?si=(.*)")
+        print(pattern.search(message.content))
+        if pattern.search(message.content):
+            await message.reply("**HEY**. Please remove the `?si=` part of your youtube links."
+                                " You may keep `&t=` for timestamps.\nThe `?si=` is a"
+                                " source identifier used to **track you**. For the better"
+                                " of everyone in the server, please remove it. Thank you!")
 
 
 async def setup(client: commands.Bot) -> None:
