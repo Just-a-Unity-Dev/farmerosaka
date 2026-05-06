@@ -9,7 +9,6 @@ import markovify
 from typing import List
 
 from classes.database import Database
-from classes.is_owner import is_owner
 from cogs.message_recorder import RecorderCog
 
 
@@ -23,7 +22,6 @@ class FunCog(
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
         self.database = client.database
-        self.qotd_channel = self.client.get_channel(int(os.getenv("QOTD_CHANNEL")))
         self.daily_task.start()
 
     @commands.hybrid_command(
@@ -196,34 +194,6 @@ class FunCog(
 
         return await ctx.reply(content, allowed_mentions=discord.AllowedMentions(
             users=False, roles=False, everyone=False))
-
-    @commands.hybrid_command(
-            name="forceqotd",
-            brief="forcibly sends a qotd",
-            description="it forces out a qotd. what else do you want me to say"
-    )
-    @is_owner()
-    async def force_qotd_command(self, ctx: commands.Context):
-        await self.send_quote_of_the_day()
-        await ctx.reply("Attempted to send the quote of the day.")
-
-    async def send_quote_of_the_day(self):
-        """Sends a random quote of the day into the QOTD channel."""
-        recorder_cog: RecorderCog = self.client.get_cog("Message recorder")
-
-        if len(recorder_cog.today_messages) <= 0:
-            await self.qotd_channel.send("No messages were sent yesterday... sorry :(")
-            return await Exception("No messages were sent today. Failed to get proper QOTD.")
-
-        selected_qotd = random.choice(recorder_cog.today_messages)
-        content = selected_qotd[0]
-        author = selected_qotd[1]
-        jump_url = selected_qotd[2]
-
-        await self.qotd_channel.send("**Quote of the day from yesterday:**\n"
-                                     f"> {content}\n-# Thank you, <@{author}>! (see {jump_url})")
-
-        recorder_cog.today_messages = []
 
     @tasks.loop(time=time(hour=9, minute=0))
     async def daily_task(self):

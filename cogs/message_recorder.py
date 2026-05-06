@@ -12,7 +12,6 @@ class RecorderCog(
     description="Records your messages (unless you don't want to)"
 ):
     messages = []
-    today_messages = []
     corpus = ""
 
     def __init__(self, client: commands.Bot) -> None:
@@ -31,7 +30,6 @@ class RecorderCog(
         if message.author.get_role(self.opt_out_id) is not None:
             return
         self.messages.append([message.content, message.author.id, message.jump_url])
-        self.today_messages.append([message.content, message.author.id, message.jump_url])
         self.corpus += " " + message.content
 
     @commands.hybrid_command(
