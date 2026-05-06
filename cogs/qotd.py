@@ -1,7 +1,8 @@
 from enum import Enum
+from typing import Union
 
 from discord.ext import commands
-from discord import Message
+from discord import Member, Message, User
 from discord.ext import tasks
 import random
 import os
@@ -25,6 +26,7 @@ class QOTDCog(
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
         self.qotd_channel = self.client.get_channel(int(os.getenv("QOTD_CHANNEL")))
+        self.qotd_winner_role = self.client.get_guild(int(os.getenv("GUILD_ID"))).get_role(int(os.getenv("QOTD_WINNER_ROLE")))
 
     @commands.Cog.listener("on_message")
     async def qotd_handler(self, message: Message):
@@ -74,7 +76,16 @@ class QOTDCog(
                                      f"> {content}\n-# Thank you, <@{author}>! (see {jump_url})\n"
                                      f"-# Selected via `{mode.name}` mode")
 
+        await self.clear_old_winner()
+        await self.award_new_winner(selected_qotd.author)
         self.clear_messages()
+    
+    async def clear_old_winner(self):
+        for member in self.qotd_winner_role.members:
+            await member.remove_roles(self.qotd_winner_role, reason="No longer a winner of QOTD.")
+
+    async def award_new_winner(self, winner: Union[User, Member]):
+        await winner.add_roles(self.qotd_winner_role, reason="Winner of the QOTD")
     
     def clear_messages(self):
         self.messages_sent_today = 0
