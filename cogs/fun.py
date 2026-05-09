@@ -22,7 +22,6 @@ class FunCog(
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
         self.database = client.database
-        self.daily_task.start()
 
     @commands.hybrid_command(
             name="pfp",
@@ -194,10 +193,6 @@ class FunCog(
 
         return await ctx.reply(content, allowed_mentions=discord.AllowedMentions(
             users=False, roles=False, everyone=False))
-
-    @tasks.loop(time=time(hour=9, minute=0))
-    async def daily_task(self):
-        await self.send_quote_of_the_day()
 
 
 async def setup(client: commands.Bot) -> None:

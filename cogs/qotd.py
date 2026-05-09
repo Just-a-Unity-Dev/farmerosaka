@@ -1,3 +1,4 @@
+from datetime import time
 from enum import Enum
 from typing import Union
 
@@ -27,6 +28,7 @@ class QOTDCog(
         self.client = client
         self.qotd_channel = self.client.get_channel(int(os.getenv("QOTD_CHANNEL")))
         self.qotd_winner_role = self.client.get_guild(int(os.getenv("GUILD_ID"))).get_role(int(os.getenv("QOTD_WINNER_ROLE")))
+        self.daily_task.start()
 
     @commands.Cog.listener("on_message")
     async def qotd_handler(self, message: Message):
@@ -91,6 +93,10 @@ class QOTDCog(
         self.messages_sent_today = 0
         self.qotd_messages_by_author = {}
         self.qotd_messages_pooled = []
+
+    @tasks.loop(time=time(hour=9, minute=0))
+    async def daily_task(self):
+        await self.send_quote_of_the_day()
 
 
 async def setup(client: commands.Bot) -> None:
